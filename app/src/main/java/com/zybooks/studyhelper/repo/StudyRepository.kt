@@ -5,9 +5,18 @@ import androidx.room.Room
 import com.zybooks.studyhelper.model.Question
 import com.zybooks.studyhelper.model.Subject
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.android.volley.VolleyError
+
 
 class StudyRepository private constructor(context: Context) {
 
+    var importedSubject = MutableLiveData<String>()
+    var fetchedSubjectList = MutableLiveData<List<Subject>>()
+
+
+
+    private val studyFetcher: StudyFetcher = StudyFetcher(context.applicationContext)
     companion object {
         private var instance: StudyRepository? = null
 
@@ -16,6 +25,31 @@ class StudyRepository private constructor(context: Context) {
                 instance = StudyRepository(context)
             }
             return instance!!
+        }
+    }
+
+    fun fetchSubjects() = studyFetcher.fetchSubjects(fetchListener)
+
+    fun fetchQuestions(subject: Subject) = studyFetcher.fetchQuestions(subject, fetchListener)
+
+    private val fetchListener = object : StudyFetcher.OnStudyDataReceivedListener {
+        override fun onSubjectsReceived(subjectList: List<Subject>) {
+            fetchedSubjectList.value = subjectList
+        }
+
+        override fun onQuestionsReceived(subject: Subject, questionList: List<Question>) {
+            for (question in questionList) {
+                question.subjectId = subject.id
+
+                    addQuestion(question)
+
+            }
+
+            importedSubject.value = subject.text
+        }
+
+        override fun onErrorResponse(error: VolleyError) {
+            error.printStackTrace()
         }
     }
 
@@ -37,29 +71,29 @@ class StudyRepository private constructor(context: Context) {
 //        }
 //    }
 
-    fun getSubject(subjectId: Long): LiveData<Subject?> = subjectDao.getSubject(subjectId)
+     fun getSubject(subjectId: Long): LiveData<Subject?> = subjectDao.getSubject(subjectId)
 
-    fun getSubjects(): LiveData<List<Subject>> = subjectDao.getSubjects()
+     fun getSubjects(): LiveData<List<Subject>> = subjectDao.getSubjects()
 
-    fun addSubject(subject: Subject) {
+     fun addSubject(subject: Subject) {
         subject.id = subjectDao.addSubject(subject)
     }
 
-    fun deleteSubject(subject: Subject) = subjectDao.deleteSubject(subject)
+     fun deleteSubject(subject: Subject) = subjectDao.deleteSubject(subject)
 
-    fun getQuestion(questionId: Long): LiveData<Question?> = questionDao.getQuestion(questionId)
+     fun getQuestion(questionId: Long): LiveData<Question?> = questionDao.getQuestion(questionId)
 
-    fun getQuestions(subjectId: Long): LiveData<List<Question>> = questionDao.getQuestions(subjectId)
+     fun getQuestions(subjectId: Long): LiveData<List<Question>> = questionDao.getQuestions(subjectId)
 
-    fun addQuestion(question: Question) {
+     fun addQuestion(question: Question) {
         question.id = questionDao.addQuestion(question)
     }
 
-    fun updateQuestion(question: Question) = questionDao.updateQuestion(question)
+     fun updateQuestion(question: Question) = questionDao.updateQuestion(question)
 
-    fun deleteQuestion(question: Question) = questionDao.deleteQuestion(question)
+     fun deleteQuestion(question: Question) = questionDao.deleteQuestion(question)
 
-    private fun addStarterData() {
+    private  fun addStarterData() {
         var subjectId = subjectDao.addSubject(Subject(text = "Math"))
         questionDao.addQuestion(
             Question(
@@ -87,4 +121,6 @@ class StudyRepository private constructor(context: Context) {
 
         subjectDao.addSubject(Subject(text = "Computing"))
     }
+
+
 }

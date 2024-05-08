@@ -7,17 +7,19 @@ import androidx.lifecycle.LiveData
 @Dao
 interface SubjectDao {
     @Query("SELECT * FROM Subject WHERE id = :id")
-    fun getSubject(id: Long): LiveData<Subject?>
+     fun getSubject(id: Long): LiveData<Subject?>
 
     @Query("SELECT * FROM Subject ORDER BY text COLLATE NOCASE")
-    fun getSubjects(): LiveData<List<Subject>>
+     fun getSubjects(): LiveData<List<Subject>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addSubject(subject: Subject): Long
+     fun addSubject(subject: Subject): Long
 
     @Update
-    fun updateSubject(subject: Subject)
+     fun updateSubject(subject: Subject)
 
     @Delete
-    fun deleteSubject(subject: Subject)
+     fun deleteSubject(subject: Subject)
+
+
 }

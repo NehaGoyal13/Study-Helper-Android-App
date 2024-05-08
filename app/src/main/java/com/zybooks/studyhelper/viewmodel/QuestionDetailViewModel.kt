@@ -8,6 +8,7 @@ import androidx.lifecycle.switchMap
 import com.zybooks.studyhelper.model.Question
 import com.zybooks.studyhelper.repo.StudyRepository
 
+
 class QuestionDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val studyRepo = StudyRepository.getInstance(application)

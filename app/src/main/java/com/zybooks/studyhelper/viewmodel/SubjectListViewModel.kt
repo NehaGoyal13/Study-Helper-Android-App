@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import com.zybooks.studyhelper.model.Subject
 import com.zybooks.studyhelper.repo.StudyRepository
 
+
 class SubjectListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val studyRepo = StudyRepository.getInstance(application.applicationContext)
